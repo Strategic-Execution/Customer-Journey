@@ -1,0 +1,1030 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How are we Transforming the Customer Experience?</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        body {
+            background-color: #f5f7fa;
+            color: #253858;
+            transition: padding-top 0.3s ease-in-out;
+        }
+
+        /* Presentation Mode Styles */
+        body.presentation-mode .add-item-btn,
+        body.presentation-mode .menu-container,
+        body.presentation-mode .stage-edit-btn,
+        body.presentation-mode .card-actions {
+            display: none !important;
+        }
+        body.presentation-mode .button-group {
+            justify-content: flex-end; /* Pushes presentation button to the right if others are hidden */
+        }
+        .presentation-mode-toggle-btn {
+            background-color: #6c757d;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background-color 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .presentation-mode-toggle-btn:hover {
+            background-color: #5a6268;
+        }
+        .presentation-mode-toggle-btn.active-presentation {
+            background-color: #28a745;
+        }
+        .presentation-mode-toggle-btn.active-presentation:hover {
+            background-color: #218838;
+        }
+
+        header {
+            background: linear-gradient(135deg, #592C82 0%, #003D99 100%);
+            color: white;
+            padding: 1.5rem 2rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .layer-toggles {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+        }
+
+        .layer-toggle {
+            display: flex;
+            align-items: center;
+            padding: 0.5rem 1rem;
+            background-color: white;
+            border: 1px solid #DFE1E6;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.9rem;
+        }
+
+        .layer-toggle:hover {
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .layer-toggle.active {
+            background-color: #592C82;
+            color: white;
+            border-color: #592C82;
+        }
+
+        .layer-toggle .icon {
+            margin-right: 0.5rem;
+            font-size: 1.1rem;
+        }
+
+        .journey-map {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .stages {
+            display: flex;
+            flex-wrap: wrap;
+            border-bottom: 1px solid #DFE1E6;
+        }
+
+        .stage {
+            flex: 0 0 20%;
+            padding: 1.5rem 1rem;
+            text-align: center;
+            border-right: 1px solid #DFE1E6;
+            border-bottom: 1px solid #DFE1E6;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+        }
+        .stage:nth-child(5n) {
+             border-right: none;
+        }
+
+        .stage:hover {
+            background-color: rgba(0, 82, 204, 0.05);
+        }
+
+        .stage.active {
+            background-color: rgba(0, 82, 204, 0.1);
+        }
+
+        .stage-icon-container {
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+            color: #592C82;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background-color: rgba(0, 82, 204, 0.1);
+        }
+
+        .stage-name {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .stage-description {
+            font-size: 0.85rem;
+            color: #7A869A;
+        }
+
+        .stage-edit-btn {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: none;
+            border: none;
+            color: #592C82;
+            cursor: pointer;
+            font-size: 0.9rem;
+            padding: 5px;
+            border-radius: 50%;
+            transition: background-color 0.2s, color 0.2s;
+            opacity: 0.7;
+        }
+
+        .stage-edit-btn:hover {
+            background-color: rgba(0, 82, 204, 0.1);
+            color: #003D99;
+            opacity: 1;
+        }
+
+        .content-area {
+            padding: 2rem;
+            min-height: 300px;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .info-card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+            transition: all 0.3s;
+            border-top: 4px solid;
+            position: relative;
+        }
+
+        .info-card:hover {
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+            transform: translateY(-4px);
+        }
+
+        .card-header {
+            padding: 1rem;
+            border-bottom: 1px solid #DFE1E6;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .layer-indicator {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.9rem;
+        }
+
+        .card-title {
+            font-weight: 600;
+            font-size: 1rem;
+            flex-grow: 1;
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .edit-btn, .delete-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #592C82;
+            font-size: 1rem;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+        }
+
+        .edit-btn:hover, .delete-btn:hover {
+            opacity: 1;
+        }
+
+        .card-content {
+            padding: 1rem;
+            font-size: 0.9rem;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 100;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 10% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 60%;
+            max-width: 600px;
+            border-radius: 8px;
+            position: relative;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .close-button {
+            color: #aaa;
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close-button:hover,
+        .close-button:focus {
+            color: black;
+            text-decoration: none;
+        }
+
+        .modal-header {
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #eee;
+            margin-bottom: 1rem;
+        }
+
+        .modal-header h2 {
+            margin-top: 0;
+            color: #253858;
+        }
+
+        .modal-body {
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-body label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+            color: #42526E;
+        }
+
+        .modal-body input[type="text"],
+        .modal-body input[type="color"],
+        .modal-body textarea,
+        .modal-body select {
+            width: calc(100% - 16px);
+            padding: 8px;
+            margin-bottom: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 0.95rem;
+        }
+         .modal-body input[type="color"] {
+            height: 40px;
+        }
+
+        .modal-footer {
+            border-top: 1px solid #eee;
+            padding-top: 1rem;
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.75rem;
+        }
+        .save-btn, .cancel-btn, .delete-btn-modal {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: background-color 0.2s, box-shadow 0.2s;
+        }
+        .save-btn { background-color: #592C82; color: white; }
+        .save-btn:hover { background-color: #003D99; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+        .cancel-btn { background-color: #f0f0f0; color: #333; }
+        .cancel-btn:hover { background-color: #e0e0e0; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .delete-btn-modal { background-color: #e74c3c; color: white; }
+        .delete-btn-modal:hover { background-color: #c0392b; }
+
+        .add-item-btn {
+            background-color: #5cb85c;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background-color 0.2s;
+        }
+        .add-item-btn:hover { background-color: #4cae4c; }
+
+        #importModal .import-modal-content, #addModal .modal-content {
+            width: 70%;
+            max-width: 700px;
+        }
+        .file-upload-container { display: flex; flex-direction: column; align-items: center; padding: 2rem; border: 2px dashed #ccc; border-radius: 8px; margin-bottom: 1rem; transition: all 0.3s; }
+        .file-upload-container:hover { border-color: #4a86e8; }
+        .file-upload-container.dragover { background-color: rgba(74, 134, 232, 0.1); border-color: #4a86e8; }
+        .file-upload-icon { font-size: 3rem; color: #4a86e8; margin-bottom: 1rem; }
+        .file-upload-text { margin-bottom: 1rem; text-align: center; }
+        .file-upload-button { background-color: #4a86e8; color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 6px; cursor: pointer; font-size: 0.9rem; transition: background-color 0.2s; }
+        .file-upload-button:hover { background-color: #3a76d8; }
+        .selected-file-info { margin-top: 1rem; display: none; }
+
+        .notification { position: fixed; bottom: 20px; right: 20px; padding: 15px 25px; color: white; border-radius: 4px; box-shadow: 0 4px 8px rgba(0,0,0,0.2); opacity: 0; transform: translateY(30px); transition: opacity 0.3s ease, transform 0.3s ease; z-index: 1001; }
+        .notification.show { opacity: 1; transform: translateY(0); }
+        .notification.success { background-color: #4CAF50; }
+        .notification.error { background-color: #f44336; }
+        .notification.warning { background-color: #ff9800; }
+        .notification.info { background-color: #2196F3; }
+
+        .menu-container { position: relative; display: inline-block; }
+        .menu-button { background-color: #2c3e50; color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 6px; cursor: pointer; font-size: 0.9rem; transition: background-color 0.2s; display: flex; align-items: center; gap: 0.5rem; }
+        .menu-button:hover { background-color: #34495e; }
+        .menu { display: none; position: absolute; background-color: white; min-width: 250px; box-shadow: 0 8px 16px rgba(0,0,0,0.2); border-radius: 6px; z-index: 10; right: 0; border: 1px solid #DFE1E6; }
+        .menu.show { display: block; }
+        .menu-section { padding: 8px 0; }
+        .menu-section:not(:last-child) { border-bottom: 1px solid #eee; }
+        .menu-section-title { font-weight: 600; font-size: 0.75rem; text-transform: uppercase; color: #7A869A; margin-bottom: 8px; padding: 0 12px; }
+        .menu-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; cursor: pointer; color: #253858; font-size: 0.9rem; transition: background-color 0.2s; }
+        .menu-item:hover { background-color: #f0f8ff; }
+        .menu-item i { width: 20px; text-align: center; color: #592C82; }
+        .button-group { display: flex; gap: 0.75rem; align-items: center; }
+
+        @media (max-width: 1200px) { .stage { flex: 0 0 25%; } .stage:nth-child(5n) { border-right: 1px solid #DFE1E6; } .stage:nth-child(4n) { border-right: none; } }
+        @media (max-width: 992px) { .stage { flex: 0 0 33.333%; } .stage:nth-child(4n) { border-right: 1px solid #DFE1E6; } .stage:nth-child(3n) { border-right: none; } .modal-content { width: 80%; } }
+        @media (max-width: 768px) { .controls { flex-direction: column; align-items: flex-start; } .stage { flex: 0 0 50%; } .stage:nth-child(3n) { border-right: 1px solid #DFE1E6; } .stage:nth-child(2n) { border-right: none; } .content-grid { grid-template-columns: 1fr; } .button-group { flex-direction: column; width: 100%; align-items: stretch;} .button-group > * { width: 100%; margin-bottom: 0.5rem;} .menu-container { width: 100%; } .menu-button { width: 100%; justify-content: center; } .modal-content { width: 90%; margin: 5% auto; } }
+        @media (max-width: 480px) { header { padding: 1rem; } h1 { font-size: 1.5rem; } .subtitle { font-size: 0.9rem; } .container { padding: 1rem; } .stage { flex: 0 0 100%; border-right: none !important; } .stage:not(:last-child) { border-bottom: 1px solid #DFE1E6 !important; } .layer-toggle { font-size: 0.85rem; padding: 0.4rem 0.8rem; } .modal-content { width: 95%; margin: 5% auto; padding: 15px;} .modal-footer { flex-direction: column; gap: 0.5rem; } .modal-footer button { width: 100%; } }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>How are we Transforming the Customer Experience?</h1>
+        <p class="subtitle">A Journey Map of Customer Experience - Linking Activities, Metrics, Risks, and Compliance to Drive Better Customer Outcomes.</p>
+    </header>
+
+    <div class="container">
+        <div class="controls">
+            <div class="layer-toggles">
+                </div>
+            <div class="button-group">
+                <button class="add-item-btn" id="openAddModal">
+                    <i class="fas fa-plus"></i> Add New Item
+                </button>
+                <div class="menu-container">
+                    <button class="menu-button" id="menuButton">
+                        <i class="fas fa-cog"></i> Menu
+                    </button>
+                    <div class="menu" id="mainMenu">
+                        <div class="menu-section">
+                            <div class="menu-section-title">Data Management</div>
+                            <div class="menu-item" id="saveHtmlMenuItem"><i class="fas fa-download"></i> Save as HTML</div>
+                            <div class="menu-item" id="exportJsonMenuItem"><i class="fas fa-file-export"></i> Export to JSON</div>
+                            <div class="menu-item" id="importJsonMenuItem"><i class="fas fa-file-import"></i> Import from JSON</div>
+                        </div>
+                        <div class="menu-section">
+                            <div class="menu-section-title">Content Management</div>
+                            <div class="menu-item" id="addStageMenuItem"> <i class="fas fa-plus-square"></i> Add New Stage</div>
+                            <div class="menu-item" id="editStagesMenuItem"><i class="fas fa-sitemap"></i> Edit Current Stage</div>
+                            <div class="menu-item" id="removeStageMenuItem"><i class="fas fa-trash-alt"></i> Remove Stage</div>
+                            <div class="menu-item" id="addLayerMenuItem"><i class="fas fa-plus-circle"></i> Add New Layer</div>
+                            <div class="menu-item" id="editLayersMenuItem"><i class="fas fa-layer-group"></i> Edit Layers</div>
+                            <div class="menu-item" id="removeLayerMenuItem"><i class="fas fa-minus-circle"></i> Remove Layer</div>
+                        </div>
+                    </div>
+                </div>
+                <button class="presentation-mode-toggle-btn" id="presentationModeToggleBtn">
+                    <i class="fas fa-eye"></i> <span>Enter Presentation Mode</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="journey-map">
+            <div class="stages" id="stagesContainer">
+                </div>
+            <div class="content-area">
+                <div class="content-grid" id="content-grid">
+                    </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="editModal" class="modal"><div class="modal-content"><span class="close-button">&times;</span><div class="modal-header"><h2>Edit Item</h2></div><div class="modal-body"><label for="edit-title">Title:</label><input type="text" id="edit-title"><label for="edit-description">Description:</label><textarea id="edit-description" rows="4"></textarea><input type="hidden" id="edit-layer-id"><input type="hidden" id="edit-item-id"></div><div class="modal-footer"><button type="button" class="save-btn" id="save-edit">Save Changes</button><button type="button" class="cancel-btn">Cancel</button></div></div></div>
+    <div id="addModal" class="modal"><div class="modal-content"><span class="close-button">&times;</span><div class="modal-header"><h2>Add New Item</h2></div><div class="modal-body"><label for="add-title">Title:</label><input type="text" id="add-title"><label for="add-description">Description:</label><textarea id="add-description" rows="4"></textarea><label for="add-stage">Stage:</label><select id="add-stage"></select><label for="add-layer">Layer:</label><select id="add-layer"></select></div><div class="modal-footer"><button type="button" class="save-btn" id="save-add">Add Item</button><button type="button" class="cancel-btn">Cancel</button></div></div></div>
+    <div id="editStageModal" class="modal"><div class="modal-content"><span class="close-button">&times;</span><div class="modal-header"><h2>Edit Stage</h2></div><div class="modal-body"><input type="hidden" id="edit-stage-id"><label for="edit-stage-name">Stage Name:</label><input type="text" id="edit-stage-name"><label for="edit-stage-description">Description:</label><textarea id="edit-stage-description" rows="3"></textarea><label for="edit-stage-icon">Icon Class (Font Awesome):</label><input type="text" id="edit-stage-icon" placeholder="e.g., fas fa-brain"><p style="font-size:0.8em; color: #7A869A;">Example: <code>fas fa-lightbulb</code></p></div><div class="modal-footer"><button type="button" class="save-btn" id="saveStageEditBtn">Save Stage</button><button type="button" class="cancel-btn">Cancel</button></div></div></div>
+    
+    <div id="addStageModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <div class="modal-header"><h2>Add New Stage</h2></div>
+            <div class="modal-body">
+                <label for="newStageIdInput">Stage ID (unique, no spaces, e.g., new_phase):</label>
+                <input type="text" id="newStageIdInput" placeholder="e.g., discovery_phase">
+                <label for="newStageNameInput">Stage Name:</label>
+                <input type="text" id="newStageNameInput" placeholder="e.g., Discovery Phase">
+                <label for="newStageDescriptionInput">Description:</label>
+                <textarea id="newStageDescriptionInput" rows="3" placeholder="Brief description of the stage"></textarea>
+                <label for="newStageIconInput">Icon Class (Font Awesome):</label>
+                <input type="text" id="newStageIconInput" placeholder="e.g., fas fa-search">
+                 <p style="font-size:0.8em; color: #7A869A;">Example: <code>fas fa-rocket</code>. Find more at FontAwesome.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="save-btn" id="saveNewStageBtn">Add Stage</button>
+                <button type="button" class="cancel-btn">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="removeStageModal" class="modal"><div class="modal-content"><span class="close-button">&times;</span><div class="modal-header"><h2>Remove Stage</h2></div><div class="modal-body"><p style="color: #c0392b; margin-bottom: 1rem; font-weight: bold;">Warning: Removing a stage deletes it and ALL its items. This action cannot be undone.</p><label for="stageToRemoveSelect">Select Stage to Remove:</label><select id="stageToRemoveSelect"></select></div><div class="modal-footer"><button type="button" class="delete-btn-modal" id="confirmRemoveStageBtn">Remove Stage</button><button type="button" class="cancel-btn">Cancel</button></div></div></div>
+    <div id="editLayersModal" class="modal"><div class="modal-content"><span class="close-button">&times;</span><div class="modal-header"><h2>Edit Layers</h2></div><div class="modal-body"><div id="layerEditContainer"></div></div><div class="modal-footer"><button type="button" class="save-btn" id="saveLayersBtn">Save Changes</button><button type="button" class="cancel-btn">Cancel</button></div></div></div>
+    <div id="addLayerModal" class="modal"><div class="modal-content"><span class="close-button">&times;</span><div class="modal-header"><h2>Add New Layer</h2></div><div class="modal-body"><label for="newLayerIdInputModal">Layer ID (unique, no spaces):</label><input type="text" id="newLayerIdInputModal" placeholder="e.g., newlayer"><label for="newLayerNameInputModal">Layer Name:</label><input type="text" id="newLayerNameInputModal" placeholder="e.g., New Layer Name"><label for="newLayerColorInputModal">Layer Color:</label><input type="color" id="newLayerColorInputModal" value="#3498db"><label for="newLayerIconInputModal">Layer Icon (emoji or short text):</label><input type="text" id="newLayerIconInputModal" placeholder="e.g., 🔍"></div><div class="modal-footer"><button type="button" class="save-btn" id="saveNewLayerBtnModal">Add Layer</button><button type="button" class="cancel-btn">Cancel</button></div></div></div>
+    <div id="removeLayerModal" class="modal"><div class="modal-content"><span class="close-button">&times;</span><div class="modal-header"><h2>Remove Layer</h2></div><div class="modal-body"><p style="color: #c0392b; margin-bottom: 1rem; font-weight: bold;">Warning: Removing a layer deletes all its items across all stages. This action cannot be undone.</p><label for="layerToRemoveSelectInRLModal">Select Layer to Remove:</label><select id="layerToRemoveSelectInRLModal"></select></div><div class="modal-footer"><button type="button" class="delete-btn-modal" id="confirmRemoveLayerBtnInRLModal">Remove Layer</button><button type="button" class="cancel-btn">Cancel</button></div></div></div>
+    <div id="importModal" class="modal"><div class="modal-content import-modal-content"><span class="close-button">&times;</span><div class="modal-header"><h2>Import Journey Map Data</h2></div><div class="modal-body"><div class="file-upload-container" id="dropZone"><div class="file-upload-icon"><i class="fas fa-file-upload"></i></div><div class="file-upload-text"><p>Drag and drop a JSON file here or click to browse</p><p class="file-upload-subtext">Supported file type: .json</p></div><button type="button" class="file-upload-button" id="browseButton">Choose File</button><input type="file" id="fileInput" accept=".json" style="display:none"><div class="selected-file-info" id="fileInfo"><p>Selected file: <span id="fileName"></span></p></div></div><div class="import-options" style="margin-top:1rem"><label style="display:block;margin-bottom:0.5rem"><input type="radio" name="importOption" value="replace" checked> Replace all existing data</label><label style="display:block"><input type="radio" name="importOption" value="merge"> Merge with existing data</label></div></div><div class="modal-footer"><button type="button" class="save-btn" id="confirmImportBtn" disabled>Import</button><button type="button" class="cancel-btn">Cancel</button></div></div></div>
+    
+    <div class="notification" id="notification"></div>
+
+<script>
+    // DOM elements
+    const stagesContainer = document.getElementById('stagesContainer');
+    const layerTogglesContainer = document.querySelector('.layer-toggles');
+    const contentGrid = document.getElementById('content-grid');
+
+    const editModalElement = document.getElementById('editModal');
+    const editTitleInput = document.getElementById('edit-title');
+    const editDescriptionInput = document.getElementById('edit-description');
+    const editLayerIdInput = document.getElementById('edit-layer-id');
+    const editItemIdInput = document.getElementById('edit-item-id');
+    const saveEditButton = document.getElementById('save-edit');
+
+    const openAddModalButton = document.getElementById('openAddModal');
+    const addModalElement = document.getElementById('addModal');
+    const addTitleInput = document.getElementById('add-title');
+    const addDescriptionInput = document.getElementById('add-description');
+    const addStageSelect = document.getElementById('add-stage');
+    const addLayerSelect = document.getElementById('add-layer');
+    const saveAddButton = document.getElementById('save-add');
+
+    const menuButton = document.getElementById('menuButton');
+    const mainMenu = document.getElementById('mainMenu');
+    const saveHtmlMenuItem = document.getElementById('saveHtmlMenuItem');
+    const exportJsonMenuItem = document.getElementById('exportJsonMenuItem');
+    const importJsonMenuItem = document.getElementById('importJsonMenuItem');
+    const addStageMenuItem = document.getElementById('addStageMenuItem');
+    const editStagesMenuItem = document.getElementById('editStagesMenuItem');
+    const removeStageMenuItem = document.getElementById('removeStageMenuItem');
+    const addLayerMenuItem = document.getElementById('addLayerMenuItem');
+    const editLayersMenuItem = document.getElementById('editLayersMenuItem');
+    const removeLayerMenuItem = document.getElementById('removeLayerMenuItem');
+
+    const presentationModeToggleBtn = document.getElementById('presentationModeToggleBtn');
+
+    const editStageModal = document.getElementById('editStageModal');
+    const editStageIdInput = document.getElementById('edit-stage-id');
+    const editStageNameInput = document.getElementById('edit-stage-name');
+    const editStageDescriptionInput = document.getElementById('edit-stage-description');
+    const editStageIconInput = document.getElementById('edit-stage-icon');
+    const saveStageEditBtn = document.getElementById('saveStageEditBtn');
+
+    const addStageModal = document.getElementById('addStageModal');
+    const newStageIdInput = document.getElementById('newStageIdInput');
+    const newStageNameInput = document.getElementById('newStageNameInput');
+    const newStageDescriptionInput = document.getElementById('newStageDescriptionInput');
+    const newStageIconInput = document.getElementById('newStageIconInput');
+    const saveNewStageBtn = document.getElementById('saveNewStageBtn');
+
+    const removeStageModal = document.getElementById('removeStageModal');
+    const stageToRemoveSelect = document.getElementById('stageToRemoveSelect');
+    const confirmRemoveStageBtn = document.getElementById('confirmRemoveStageBtn');
+
+    const editLayersModal = document.getElementById('editLayersModal');
+    const layerEditContainer = document.getElementById('layerEditContainer');
+    const saveLayersBtn = document.getElementById('saveLayersBtn');
+
+    const addLayerModal = document.getElementById('addLayerModal');
+    const newLayerIdInputModal = document.getElementById('newLayerIdInputModal');
+    const newLayerNameInputModal = document.getElementById('newLayerNameInputModal');
+    const newLayerColorInputModal = document.getElementById('newLayerColorInputModal');
+    const newLayerIconInputModal = document.getElementById('newLayerIconInputModal');
+    const saveNewLayerBtnModal = document.getElementById('saveNewLayerBtnModal');
+
+    const removeLayerModalElement = document.getElementById('removeLayerModal');
+    const layerToRemoveSelectInRLModal = document.getElementById('layerToRemoveSelectInRLModal');
+    const confirmRemoveLayerBtnInRLModal = document.getElementById('confirmRemoveLayerBtnInRLModal');
+
+
+    const importModalElement = document.getElementById('importModal');
+    const dropZone = document.getElementById('dropZone');
+    const fileInput = document.getElementById('fileInput');
+    const browseButton = document.getElementById('browseButton');
+    const fileInfo = document.getElementById('fileInfo');
+    const fileName = document.getElementById('fileName');
+    const confirmImportBtn = document.getElementById('confirmImportBtn');
+
+    const notificationElement = document.getElementById('notification');
+    const allModalCloseButtons = document.querySelectorAll('.modal .close-button');
+    const allModalCancelButtons = document.querySelectorAll('.modal-footer .cancel-btn');
+
+    // --- APPLICATION STATE AND DATA ---
+    let currentStageId = '';
+    let activeLayers = [];
+    let fileToImport = null;
+    let isMenuOpen = false;
+    let isInPresentationMode = false;
+
+    // Default Data (You can expand this as needed)
+    let journeyStages = [
+        { id: 'imagine', name: 'Imagine & Pursue', description: 'Our customers have unique needs, wants, aspirations and goals. They are imagining upgrading their home, buying that new car or doubling their business.', iconClass: 'fas fa-lightbulb', active: true },
+        { id: 'explore', name: 'Realise & Explore', description: 'At this stage our customers have realised that they now have something that they wish to protect. It is now that insurance often comes to mind and they find themselves in need of information. Customers are researching their options on what policy is right for them', iconClass: 'fas fa-microscope', active: false },
+        { id: 'decide', name: 'Decide', description: 'At this stage customers may choose us to protect what they value. And once they make that decision, they are looking for reinforcing signs that we are the right partner and can be trusted', iconClass: 'fas fa-dollar-sign', active: false },
+        { id: 'rethink', name: 'Rethink', description: 'After a period of insurance our customers may reconsider their protection due to circumstances. This is often triggered by the renewal notice, or other life events (like a neighbour having a bad experience with one of our brands).', iconClass: 'fas fa-brain', active: false },
+        { id: 'recover', name: 'Recover', description: 'Our customers may experience an incident or accident and reach out to one of our claim teams and lodge a claim, against their insurance policy. We help them navigate options for repair, replacement and personal recovery.', iconClass: 'fas fa-car-crash', active: false },
+    ];
+    let dataLayers = [
+        { id: "activities", name: "Key Activities", color: "#8884d8", icon: "🚧", active: true },
+        { id: "metrics", name: "Success Metrics", color: "#83d898", icon: "📈", active: false },
+        { id: "risks", name: "Potential Risks", color: "#e8698f", icon: "⚠️", active: false },
+        { id: "regulations", name: "Reg. Obligations", color: "#d884d8", icon: "👨‍⚖️", active: false },
+    ];
+    let journeyData = {};
+    journeyStages.forEach(stage => {
+        journeyData[stage.id] = {};
+        dataLayers.forEach(layer => {
+            journeyData[stage.id][layer.id] = [];
+            // Example default data
+            if (stage.id === 'imagine' && layer.id === 'activities') {
+                journeyData[stage.id][layer.id].push( { id: generateUniqueId('imagine-act'), title: "Activity 1", description: "[insert text]]" });
+            }
+             if (stage.id === 'imagine' && layer.id === 'risks') {
+                journeyData[stage.id][layer.id].push( { id: generateUniqueId('imagine-risk'), title: "Risk 1", description: "[insert text]]" });
+            }
+            if (stage.id === 'imagine' && layer.id === 'metrics') {
+                journeyData[stage.id][layer.id].push( { id: generateUniqueId('imagine-metrics'), title: "Metric 1", description: "[insert text]]" });
+            }
+            if (stage.id === 'imagine' && layer.id === 'regulations') {
+                journeyData[stage.id][layer.id].push( { id: generateUniqueId('imagine-regulations'), title: "Regulation 1", description: "[insert text]]" });
+            }
+        });
+    });
+
+    // --- UTILITY & DATA PERSISTENCE ---
+    const APP_PREFIX = 'customerJourneyMap_v1.1_';
+    const STAGES_KEY = `${APP_PREFIX}journeyStages`;
+    const LAYERS_KEY = `${APP_PREFIX}dataLayers`;
+    const JOURNEY_DATA_KEY = `${APP_PREFIX}journeyData`;
+    const ACTIVE_LAYERS_KEY = `${APP_PREFIX}activeLayers`;
+    const CURRENT_STAGE_KEY = `${APP_PREFIX}currentStageId`;
+    const PRESENTATION_MODE_KEY = `${APP_PREFIX}presentationMode`;
+
+    function generateUniqueId(prefix = 'item') { return `${prefix}-${Date.now()}-${Math.random().toString(36).substring(2,9)}`; }
+    function showNotification(message, type = 'info', duration = 3000) {
+        notificationElement.textContent = message;
+        notificationElement.className = 'notification show';
+        if (type === 'success') notificationElement.classList.add('success');
+        else if (type === 'error') notificationElement.classList.add('error');
+        else if (type === 'warning') notificationElement.classList.add('warning');
+        else notificationElement.classList.add('info');
+        setTimeout(() => { notificationElement.classList.remove('show', 'success', 'error', 'warning', 'info'); }, duration);
+    }
+    function saveDataToLocalStorage() {
+        try {
+            console.log('DEBUG: Saving to localStorage - journeyStages:', JSON.parse(JSON.stringify(journeyStages)));
+            localStorage.setItem(STAGES_KEY, JSON.stringify(journeyStages));
+            localStorage.setItem(LAYERS_KEY, JSON.stringify(dataLayers));
+            localStorage.setItem(JOURNEY_DATA_KEY, JSON.stringify(journeyData));
+            localStorage.setItem(ACTIVE_LAYERS_KEY, JSON.stringify(activeLayers));
+            localStorage.setItem(CURRENT_STAGE_KEY, currentStageId);
+            localStorage.setItem(PRESENTATION_MODE_KEY, JSON.stringify(isInPresentationMode));
+            console.log("DEBUG: Data saved to localStorage successfully.");
+        } catch (e) { console.error('Save Error:', e); showNotification('Could not save changes.', 'error'); }
+    }
+    function loadDataFromLocalStorage() {
+        try {
+            const sS = localStorage.getItem(STAGES_KEY); if (sS) journeyStages = JSON.parse(sS);
+            const sL = localStorage.getItem(LAYERS_KEY); if (sL) dataLayers = JSON.parse(sL);
+            const sD = localStorage.getItem(JOURNEY_DATA_KEY); if (sD) journeyData = JSON.parse(sD);
+            const sAL = localStorage.getItem(ACTIVE_LAYERS_KEY); if (sAL) activeLayers = JSON.parse(sAL);
+            const sCS = localStorage.getItem(CURRENT_STAGE_KEY); if (sCS) currentStageId = sCS;
+            const sPM = localStorage.getItem(PRESENTATION_MODE_KEY); if (sPM) isInPresentationMode = JSON.parse(sPM);
+            console.log("DEBUG: Data loaded from localStorage.");
+        } catch (e) { console.error('Load Error:', e); showNotification('Could not load saved data.', 'warning');}
+    }
+
+    // --- PRESENTATION MODE ---
+    function applyPresentationMode() {
+        const btnText = presentationModeToggleBtn.querySelector('span');
+        if (isInPresentationMode) {
+            document.body.classList.add('presentation-mode');
+            if(btnText) btnText.textContent = "Exit Presentation Mode";
+            presentationModeToggleBtn.querySelector('i').className = 'fas fa-edit';
+            presentationModeToggleBtn.classList.add('active-presentation');
+        } else {
+            document.body.classList.remove('presentation-mode');
+            if(btnText) btnText.textContent = "Enter Presentation Mode";
+            presentationModeToggleBtn.querySelector('i').className = 'fas fa-eye';
+            presentationModeToggleBtn.classList.remove('active-presentation');
+        }
+    }
+    function togglePresentationMode() {
+        isInPresentationMode = !isInPresentationMode;
+        applyPresentationMode();
+        saveDataToLocalStorage();
+        showNotification(isInPresentationMode ? "Presentation Mode Entered" : "Presentation Mode Exited", 'info', 2000);
+    }
+
+    // --- STAGE MANAGEMENT ---
+    function renderStages() {
+        stagesContainer.innerHTML = '';
+        const itemsPerRow = 5;
+        if (journeyStages.length === 0) { stagesContainer.innerHTML = '<p style="padding:2rem;text-align:center;color:#7A869A;width:100%;">No stages defined. Add a stage from the menu.</p>'; currentStageId = ''; updateContent(); updateAddStageSelect(); updateStageToRemoveSelect(); return; }
+        journeyStages.forEach((stage, index) => {
+            const stageDiv = document.createElement('div'); stageDiv.className = 'stage'; stageDiv.setAttribute('data-stage-id', stage.id);
+            if (stage.id === currentStageId) stageDiv.classList.add('active');
+            stageDiv.innerHTML = `<button class="stage-edit-btn" title="Edit '${stage.name}'"><i class="fas fa-pencil-alt"></i></button><div class="stage-icon-container"><i class="${stage.iconClass}"></i></div><div class="stage-name">${stage.name}</div><div class="stage-description">${stage.description}</div>`;
+            stageDiv.querySelector('.stage-edit-btn').addEventListener('click', (e) => { e.stopPropagation(); openEditStageModal(stage.id); });
+            stageDiv.addEventListener('click', () => { if (currentStageId === stage.id) return; currentStageId = stage.id; journeyStages.forEach(s => s.active = (s.id === stage.id)); document.querySelectorAll('.stage.active').forEach(el => el.classList.remove('active')); stageDiv.classList.add('active'); updateContent(); saveDataToLocalStorage(); });
+            stagesContainer.appendChild(stageDiv);
+            if ((index + 1) % itemsPerRow === 0 || index === journeyStages.length - 1) stageDiv.style.borderRight = 'none'; else stageDiv.style.borderRight = '1px solid #DFE1E6';
+            const numRows = Math.ceil(journeyStages.length / itemsPerRow); const currentRow = Math.floor(index / itemsPerRow) + 1;
+             if (currentRow === numRows ) stageDiv.style.borderBottom = 'none'; else stageDiv.style.borderBottom = '1px solid #DFE1E6';
+        });
+        updateAddStageSelect(); updateStageToRemoveSelect();
+    }
+    function updateAddStageSelect() {
+        addStageSelect.innerHTML = '';
+        if(journeyStages.length === 0) { addStageSelect.innerHTML = '<option disabled selected>No Stages Available</option>'; addStageSelect.disabled = true; return; }
+        addStageSelect.disabled = false;
+        journeyStages.forEach(stage => { const option = document.createElement('option'); option.value = stage.id; option.textContent = stage.name; if (stage.id === currentStageId) option.selected = true; addStageSelect.appendChild(option); });
+    }
+    function updateStageToRemoveSelect() {
+        stageToRemoveSelect.innerHTML = '';
+        if (journeyStages.length === 0) { stageToRemoveSelect.innerHTML = '<option disabled selected>No stages to remove</option>'; confirmRemoveStageBtn.disabled = true; return; }
+        confirmRemoveStageBtn.disabled = false;
+        journeyStages.forEach(stage => { const option = document.createElement('option'); option.value = stage.id; option.textContent = stage.name; stageToRemoveSelect.appendChild(option); });
+    }
+    function openEditStageModal(stageId) {
+        const stage = journeyStages.find(s => s.id === stageId); if (stage) { editStageIdInput.value = stage.id; editStageNameInput.value = stage.name; editStageDescriptionInput.value = stage.description; editStageIconInput.value = stage.iconClass; editStageModal.style.display = 'block'; } else showNotification(`Stage ID '${stageId}' not found.`, 'error');
+    }
+    function saveEditedStage() {
+        const stageId = editStageIdInput.value, name = editStageNameInput.value.trim(), desc = editStageDescriptionInput.value.trim(), icon = editStageIconInput.value.trim();
+        if (!name || !desc || !icon) { showNotification('All fields for stage (Name, Description, Icon) are required.', 'error'); return; }
+        const stage = journeyStages.find(s => s.id === stageId);
+        if (stage) {
+            stage.name = name; stage.description = desc; stage.iconClass = icon;
+            console.log('DEBUG: Updated stage object in journeyStages (inside saveEditedStage):', JSON.parse(JSON.stringify(stage)));
+            renderStages();
+            saveDataToLocalStorage(); 
+            updateContent();
+            showNotification(`Stage '${name}' updated.`, 'success');
+            closeModal(editStageModal);
+        } else {
+            showNotification(`Stage ID '${stageId}' not found for update.`, 'error');
+        }
+    }
+    function openAddStageModal() {
+        newStageIdInput.value = ''; newStageNameInput.value = ''; newStageDescriptionInput.value = ''; newStageIconInput.value = 'fas fa-star';
+        addStageModal.style.display = 'block';
+    }
+    function addNewStage() {
+        const id = newStageIdInput.value.trim().replace(/\s+/g, '_').toLowerCase();
+        const name = newStageNameInput.value.trim();
+        const description = newStageDescriptionInput.value.trim();
+        const iconClass = newStageIconInput.value.trim() || 'fas fa-star';
+        if (!id || !name || !description) { showNotification('Stage ID, Name, and Description are required.', 'error'); return; }
+        if (!/^[a-z0-9_]+$/.test(id)) { showNotification('Stage ID: lowercase letters, numbers, underscores only.', 'error'); return; }
+        if (journeyStages.some(stage => stage.id === id)) { showNotification(`Stage ID '${id}' already exists. Use a unique ID.`, 'error'); return; }
+        const newStage = { id, name, description, iconClass, active: journeyStages.length === 0 };
+        journeyStages.push(newStage);
+        journeyData[id] = {}; dataLayers.forEach(layer => { journeyData[id][layer.id] = []; });
+        if (newStage.active || journeyStages.length === 1) {
+             currentStageId = id;
+             journeyStages.forEach(s => s.active = (s.id === id));
+        }
+        console.log('DEBUG: journeyStages after adding new stage (inside addNewStage):', JSON.parse(JSON.stringify(journeyStages)));
+        renderStages();
+        saveDataToLocalStorage();
+        showNotification(`Stage '${name}' added successfully!`, 'success'); closeModal(addStageModal);
+    }
+    function openRemoveStageModal() { updateStageToRemoveSelect(); removeStageModal.style.display = 'block'; }
+    function removeSelectedStage() {
+        const stageIdToRemove = stageToRemoveSelect.value; if (!stageIdToRemove) { showNotification('No stage selected for removal.', 'warning'); return; }
+        const stageInfo = journeyStages.find(s => s.id === stageIdToRemove);
+        if (!confirm(`Are you sure you want to remove the stage "${stageInfo ? stageInfo.name : stageIdToRemove}" and ALL its associated data? This cannot be undone.`)) return;
+        journeyStages = journeyStages.filter(s => s.id !== stageIdToRemove);
+        delete journeyData[stageIdToRemove];
+        console.log('DEBUG: journeyStages after filtering (inside removeSelectedStage):', JSON.parse(JSON.stringify(journeyStages)));
+        if (currentStageId === stageIdToRemove) { currentStageId = journeyStages.length > 0 ? journeyStages[0].id : ''; if (journeyStages.length > 0) journeyStages[0].active = true; }
+        journeyStages.forEach(s => s.active = (s.id === currentStageId));
+        renderStages();
+        saveDataToLocalStorage();
+        updateContent();
+        showNotification(`Stage "${stageInfo ? stageInfo.name : stageIdToRemove}" removed.`, 'success'); closeModal(removeStageModal);
+    }
+
+    // --- LAYER MANAGEMENT ---
+    function getLayerInfo(layerId) { return dataLayers.find(l => l.id === layerId); }
+    function renderLayerToggles() {
+        layerTogglesContainer.innerHTML = '';
+        dataLayers.forEach(layer => {
+            const toggle = document.createElement('div'); toggle.className = 'layer-toggle'; toggle.setAttribute('data-layer-id', layer.id);
+            toggle.innerHTML = `<span class="icon">${layer.icon}</span> ${layer.name}`; if (activeLayers.includes(layer.id)) toggle.classList.add('active');
+            toggle.addEventListener('click', function() { this.classList.toggle('active'); activeLayers = Array.from(layerTogglesContainer.querySelectorAll('.layer-toggle.active')).map(el => el.dataset.layerId); updateContent(); saveDataToLocalStorage(); });
+            layerTogglesContainer.appendChild(toggle);
+        });
+        updateAddLayerSelect();
+    }
+    function updateAddLayerSelect() {
+        addLayerSelect.innerHTML = ''; layerToRemoveSelectInRLModal.innerHTML = '';
+        if (dataLayers.length === 0) { addLayerSelect.innerHTML = '<option disabled selected>No Layers Available</option>'; addLayerSelect.disabled = true; layerToRemoveSelectInRLModal.innerHTML = '<option disabled>No layers to remove</option>'; confirmRemoveLayerBtnInRLModal.disabled = true; return; }
+        addLayerSelect.disabled = false; confirmRemoveLayerBtnInRLModal.disabled = false;
+        dataLayers.forEach(layer => { const option = document.createElement('option'); option.value = layer.id; option.textContent = layer.name; addLayerSelect.appendChild(option.cloneNode(true)); layerToRemoveSelectInRLModal.appendChild(option); });
+    }
+    function populateLayerEditModal() {
+        layerEditContainer.innerHTML = ''; dataLayers.forEach(layer => { layerEditContainer.innerHTML += `<div style="display:flex;gap:10px;margin-bottom:15px;align-items:center;"><div style="flex:1;"><label>ID:</label><input type="text" value="${layer.id}" readonly style="background:#eee;width:100%;"></div><div style="flex:2;"><label>Name:</label><input type="text" class="layer-edit-name" value="${layer.name}" data-layer-id="${layer.id}" style="width:100%;"></div><div style="flex:0.5;"><label>Color:</label><input type="color" class="layer-edit-color" value="${layer.color}" data-layer-id="${layer.id}"></div><div style="flex:0.5;"><label>Icon:</label><input type="text" class="layer-edit-icon" value="${layer.icon}" data-layer-id="${layer.id}" style="width:50px;text-align:center;"></div></div>`; }); editLayersModal.style.display = 'block';
+    }
+    function saveLayerEdits() {
+        let changed = false; layerEditContainer.querySelectorAll('input[data-layer-id]').forEach(input => { const layer = dataLayers.find(l => l.id === input.dataset.layerId); if (!layer) return; const prop = input.classList.contains('layer-edit-name') ? 'name' : (input.classList.contains('layer-edit-color') ? 'color' : 'icon'); if (input.value.trim() && layer[prop] !== input.value.trim()) { layer[prop] = input.value.trim(); changed = true; } });
+        if (changed) { renderLayerToggles(); updateContent(); saveDataToLocalStorage(); showNotification('Layers updated.', 'success'); } else showNotification('No changes detected.', 'info'); closeModal(editLayersModal);
+    }
+    function addNewLayer() {
+        const id = newLayerIdInputModal.value.trim().replace(/\s+/g, '_').toLowerCase(); const name = newLayerNameInputModal.value.trim();
+        const color = newLayerColorInputModal.value; const icon = newLayerIconInputModal.value.trim();
+        if (!id || !name || !icon) { showNotification('Layer ID, Name, and Icon are required.', 'error'); return; }
+        if (!/^[a-z0-9_]+$/.test(id)) { showNotification('Layer ID: lowercase letters, numbers, underscores only.', 'error'); return; }
+        if (dataLayers.some(l => l.id === id)) { showNotification(`Layer ID '${id}' already exists. Use a unique ID.`, 'error'); return; }
+        dataLayers.push({ id, name, color, icon, active: false });
+        Object.keys(journeyData).forEach(sId => { if(journeyData[sId]) journeyData[sId][id] = []; });
+        renderLayerToggles(); saveDataToLocalStorage(); showNotification(`Layer '${name}' added.`, 'success');
+        newLayerIdInputModal.value = ''; newLayerNameInputModal.value = ''; newLayerColorInputModal.value = '#3498db'; newLayerIconInputModal.value = ''; closeModal(addLayerModal);
+    }
+    function removeSelectedLayer() {
+        const layerId = layerToRemoveSelectInRLModal.value; if (!layerId || dataLayers.length === 0) { showNotification('No layer selected or no layers exist to remove.', 'warning'); return; } const layerInfo = getLayerInfo(layerId);
+        if (!confirm(`Are you sure you want to remove the layer "${layerInfo.name}" and all its associated items? This cannot be undone.`)) return;
+        dataLayers = dataLayers.filter(l => l.id !== layerId); Object.keys(journeyData).forEach(sId => { if(journeyData[sId]) delete journeyData[sId][layerId]; }); activeLayers = activeLayers.filter(l => l !== layerId);
+        renderLayerToggles(); updateContent(); saveDataToLocalStorage(); showNotification(`Layer "${layerInfo.name}" removed.`, 'success'); closeModal(removeLayerModalElement);
+    }
+
+    // --- ITEM MANAGEMENT & CONTENT DISPLAY ---
+    function addNewJourneyItem() {
+        const title = addTitleInput.value.trim(), desc = addDescriptionInput.value.trim(), stageId = addStageSelect.value, layerId = addLayerSelect.value;
+        if (!title || !desc || !stageId || !layerId || addStageSelect.disabled || addLayerSelect.disabled) { showNotification('All fields required & select a valid stage/layer.', 'error'); return; }
+        if (!journeyData[stageId]) journeyData[stageId] = {}; if (!journeyData[stageId][layerId]) journeyData[stageId][layerId] = [];
+        journeyData[stageId][layerId].push({ id: generateUniqueId(`${stageId}-${layerId}`), title, description: desc }); saveDataToLocalStorage(); if (stageId === currentStageId) updateContent();
+        showNotification('New item added successfully!', 'success'); addTitleInput.value = ''; addDescriptionInput.value = ''; closeModal(addModalElement);
+    }
+    function saveEditedJourneyItem() {
+        const itemId = editItemIdInput.value, layerId = editLayerIdInput.value, title = editTitleInput.value.trim(), desc = editDescriptionInput.value.trim(); if (!title || !desc) { showNotification('Title and Description are required.', 'error'); return; }
+        if (journeyData[currentStageId]?.[layerId]) { const item = journeyData[currentStageId][layerId].find(i => i.id === itemId); if (item) { item.title = title; item.description = desc; saveDataToLocalStorage(); updateContent(); showNotification('Item updated successfully!', 'success');} else showNotification('Item not found for update.', 'error'); } else showNotification('Stage or layer data not found.', 'error'); closeModal(editModalElement);
+    }
+    function updateContent() {
+        contentGrid.innerHTML = ''; if (!currentStageId || journeyStages.length === 0) { contentGrid.innerHTML = '<p style="grid-column:1/-1;text-align:center;color:#7A869A;padding:2rem;">No active stage or no stages defined.</p>'; return; }
+        if (!journeyData[currentStageId]) { journeyData[currentStageId] = {}; dataLayers.forEach(l => { if (journeyData[currentStageId]) journeyData[currentStageId][l.id] = [];}); } const stageData = journeyData[currentStageId]; let itemsRendered = 0;
+        activeLayers.forEach(layerId => { const layerInfo = getLayerInfo(layerId); if (!layerInfo) return; const items = stageData?.[layerId] || []; items.forEach(item => { const card = document.createElement('div'); card.className = 'info-card'; card.style.borderTopColor = layerInfo.color; card.innerHTML = `<div class="card-header"><div class="layer-indicator" style="background-color:${layerInfo.color}">${layerInfo.icon}</div><div class="card-title">${item.title}</div><div class="card-actions"><button class="edit-btn" title="Edit Item" data-item-id="${item.id}" data-layer-id="${layerId}"><i class="fas fa-edit"></i></button><button class="delete-btn" title="Delete Item" data-item-id="${item.id}" data-layer-id="${layerId}"><i class="fas fa-trash-alt"></i></button></div></div><div class="card-content">${item.description}</div>`; contentGrid.appendChild(card); itemsRendered++; }); });
+        if (itemsRendered === 0) { contentGrid.innerHTML = `<p style="grid-column:1/-1;text-align:center;color:#7A869A;padding:2rem;">${activeLayers.length === 0 ? 'No layers selected. Please select a layer to view content.' : 'No data available for the selected stage and layers. Try adding an item.'}</p>`; }
+    }
+
+    // --- MODAL & IMPORT/EXPORT ---
+    function closeModal(modalElement) { if (modalElement) modalElement.style.display = 'none'; }
+    allModalCloseButtons.forEach(b => b.addEventListener('click', () => closeModal(b.closest('.modal'))));
+    allModalCancelButtons.forEach(b => b.addEventListener('click', () => closeModal(b.closest('.modal'))));
+    window.addEventListener('click', (e) => { if (e.target.classList.contains('modal')) closeModal(e.target); });
+    function downloadHTML() {
+        console.log('DEBUG: Downloading HTML - journeyStages state for embed:', JSON.parse(JSON.stringify(journeyStages)));
+        const dataToEmbed = { journeyStages, dataLayers, journeyData, activeLayers, currentStageId, isInPresentationMode };
+        const scriptContent = `<script>
+            window.embeddedIAGData = ${JSON.stringify(dataToEmbed)};
+            document.addEventListener('DOMContentLoaded', function() {
+                if (window.embeddedIAGData && typeof initializeJourneyMap === 'function') {
+                    window.journeyStages = embeddedIAGData.journeyStages;
+                    window.dataLayers = embeddedIAGData.dataLayers;
+                    window.journeyData = embeddedIAGData.journeyData;
+                    window.activeLayers = embeddedIAGData.activeLayers;
+                    window.currentStageId = embeddedIAGData.currentStageId;
+                    window.isInPresentationMode = embeddedIAGData.isInPresentationMode;
+                    window.APP_PREFIX = 'customerJourneyMap_standalone_';
+                    window.saveDataToLocalStorage = () => console.log("Standalone HTML: Save disabled.");
+                    window.loadDataFromLocalStorage = () => console.log("Standalone HTML: Load disabled.");
+                }
+            });
+        <\/script>`;
+        const fullHtml = document.documentElement.outerHTML;
+        let finalHtml;
+        const headEndTag = '</head>';
+        const bodyStartTag = '<body';
+        if (fullHtml.includes(headEndTag)) {
+            const headIndex = fullHtml.indexOf(headEndTag);
+            finalHtml = fullHtml.substring(0, headIndex) + scriptContent + fullHtml.substring(headIndex);
+        } else if (fullHtml.includes(bodyStartTag)) {
+            const bodyIndex = fullHtml.indexOf(bodyStartTag);
+            const bodyTagEnd = fullHtml.indexOf('>', bodyIndex) + 1;
+            finalHtml = fullHtml.substring(0, bodyTagEnd) + scriptContent + fullHtml.substring(bodyTagEnd);
+        } else {
+             finalHtml = `${scriptContent}\n<!DOCTYPE html>\n${fullHtml.substring(fullHtml.indexOf('<html'))}`;
+        }
+        const blob = new Blob([finalHtml], { type: 'text/html' });
+        const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+        a.download = 'Customer_Journey_Map_Interactive.html';
+        document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(a.href);
+        showNotification('Journey Map HTML downloaded successfully!', 'success');
+    }
+    function exportJourneyData() {
+        console.log('DEBUG: Exporting JSON - journeyStages state at export:', JSON.parse(JSON.stringify(journeyStages)));
+        const dataToExport={
+            version:"1.6.0",
+            createdAt:new Date().toISOString(),
+            journeyStages,
+            dataLayers,
+            journeyData,
+            activeLayers,
+            currentStageId,
+            isInPresentationMode
+        };
+        const dataStr = JSON.stringify(dataToExport,null,2);
+        const blob=new Blob([dataStr],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='Customer_Journey_Map_Data.json';document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(a.href);showNotification('Journey Map data exported successfully!','success');
+    }
+    fileInput.addEventListener('change', (e) => handleFileSelect(e.target.files[0])); browseButton.addEventListener('click', () => fileInput.click()); dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('dragover'); }); dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover')); dropZone.addEventListener('drop', (e) => { e.preventDefault(); dropZone.classList.remove('dragover'); handleFileSelect(e.dataTransfer.files[0]); });
+    function handleFileSelect(file) { if(file&&file.type==='application/json'){fileToImport=file;fileName.textContent=file.name;fileInfo.style.display='block';confirmImportBtn.disabled=false;}else{fileToImport=null;fileName.textContent='';fileInfo.style.display='none';confirmImportBtn.disabled=true;showNotification('Please select a valid JSON file.','error');}}
+    function importJourneyData() {
+        if (!fileToImport) { showNotification('No file selected for import.', 'warning'); return; }
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            try {
+                console.log("IMPORT: File read complete. Parsing JSON...");
+                const importedRoot = JSON.parse(event.target.result);
+                console.log("IMPORT: JSON Parsed. Imported root object:", JSON.parse(JSON.stringify(importedRoot)));
+                if (!importedRoot || typeof importedRoot.journeyStages === 'undefined' || typeof importedRoot.dataLayers === 'undefined' || typeof importedRoot.journeyData === 'undefined') { throw new Error('Invalid JSON structure. Expected journeyStages, dataLayers, and journeyData.'); }
+                const importOption = document.querySelector('input[name="importOption"]:checked').value;
+                console.log(`IMPORT: Option selected: ${importOption}`);
+                if (importOption === 'replace') {
+                    console.log("IMPORT (Replace): Replacing all data.");
+                    journeyStages = importedRoot.journeyStages || [];
+                    dataLayers = importedRoot.dataLayers || [];
+                    journeyData = importedRoot.journeyData || {};
+                    activeLayers = (importedRoot.activeLayers && Array.isArray(importedRoot.activeLayers)) ? importedRoot.activeLayers.filter(alId => dataLayers.some(dl => dl.id === alId)) : (dataLayers.length > 0 ? [dataLayers[0].id] : []);
+                    currentStageId = (importedRoot.currentStageId && journeyStages.some(s => s.id === importedRoot.currentStageId)) ? importedRoot.currentStageId : (journeyStages.length > 0 ? journeyStages[0].id : '');
+                    isInPresentationMode = typeof importedRoot.isInPresentationMode === 'boolean' ? importedRoot.isInPresentationMode : false;
+                    console.log("IMPORT (Replace): journeyData from file:", JSON.parse(JSON.stringify(journeyData)));
+                    console.log("IMPORT (Replace): currentStageId set to:", currentStageId);
+                    console.log("IMPORT (Replace): activeLayers set to:", JSON.stringify(activeLayers));
+                    console.log("IMPORT (Replace): isInPresentationMode set to:", isInPresentationMode);
+                } else { /* Merge logic */
+                    console.log("IMPORT (Merge): Merging data...");
+                    (importedRoot.journeyStages || []).forEach(is=>{const idx=journeyStages.findIndex(s=>s.id===is.id);if(idx>-1)journeyStages[idx]={...journeyStages[idx],...is};else journeyStages.push(is);});
+                    (importedRoot.dataLayers || []).forEach(il=>{const idx=dataLayers.findIndex(l=>l.id===il.id);if(idx>-1)dataLayers[idx]={...dataLayers[idx],...il};else dataLayers.push(il);});
+                    Object.keys(importedRoot.journeyData || {}).forEach(sId=>{if(!journeyData[sId])journeyData[sId]={};Object.keys(importedRoot.journeyData[sId]).forEach(lId=>{if(!journeyData[sId][lId])journeyData[sId][lId]=[];(importedRoot.journeyData[sId][lId]||[]).forEach(item=>journeyData[sId][lId].push({...item,id:generateUniqueId(`${sId}-${lId}-merged`)}));});});
+                }
+                console.log("IMPORT: Running first data consistency check (pre-save)...");
+                const tempJD_check1 = JSON.parse(JSON.stringify(journeyData));
+                journeyStages.forEach(stg=>{if(!journeyData[stg.id])journeyData[stg.id]={};dataLayers.forEach(lyr=>{if(journeyData[stg.id]&&typeof journeyData[stg.id][lyr.id]==='undefined')journeyData[stg.id][lyr.id]=[];});});
+                Object.keys(journeyData).forEach(sId=>{if(!journeyStages.some(s=>s.id===sId))delete journeyData[sId];else{if(journeyData[sId]){Object.keys(journeyData[sId]).forEach(lId=>{if(!dataLayers.some(l=>l.id===lId))delete journeyData[sId][lId];});}}});
+                if(JSON.stringify(tempJD_check1) !== JSON.stringify(journeyData)) console.warn("IMPORT: journeyData changed in first consistency check.");
+                console.log("IMPORT: journeyData after 1st consistency:", JSON.parse(JSON.stringify(journeyData)));
+                saveDataToLocalStorage();
+                initializeJourneyMap();
+                showNotification('Journey Map data imported successfully!','success');
+            }catch(err){console.error("IMPORT Error:",err);showNotification(`Error importing JSON: ${err.message}`,'error',5000);}finally{closeModal(importModalElement);fileInput.value='';fileToImport=null;fileName.textContent='';fileInfo.style.display='none';confirmImportBtn.disabled=true;console.log("IMPORT: Process finished.");}
+        };
+        reader.readAsText(fileToImport);
+    }
+
+    // --- EVENT LISTENERS ---
+    presentationModeToggleBtn.addEventListener('click', togglePresentationMode);
+    addStageMenuItem.addEventListener('click', () => { openAddStageModal(); mainMenu.classList.remove('show'); isMenuOpen = false; });
+    saveNewStageBtn.addEventListener('click', addNewStage);
+    editStagesMenuItem.addEventListener('click', () => { const stageId = currentStageId || (journeyStages.length ? journeyStages[0].id : null); if (stageId) openEditStageModal(stageId); else showNotification('No stages to edit.', 'warning'); mainMenu.classList.remove('show'); isMenuOpen = false; });
+    removeStageMenuItem.addEventListener('click', () => { openRemoveStageModal(); mainMenu.classList.remove('show'); isMenuOpen = false; });
+    confirmRemoveStageBtn.addEventListener('click', removeSelectedStage);
+    saveStageEditBtn.addEventListener('click', saveEditedStage); saveEditButton.addEventListener('click', saveEditedJourneyItem); saveAddButton.addEventListener('click', addNewJourneyItem);
+    openAddModalButton.addEventListener('click', () => { addTitleInput.value='';addDescriptionInput.value=''; if(journeyStages.length>0){addStageSelect.value=currentStageId||journeyStages[0].id; addStageSelect.disabled=false;}else{addStageSelect.innerHTML='<option disabled selected>No Stages</option>'; addStageSelect.disabled=true;} if(dataLayers.length>0){updateAddLayerSelect(); addLayerSelect.disabled=false;}else{addLayerSelect.innerHTML='<option disabled selected>No Layers</option>';addLayerSelect.disabled=true;} addModalElement.style.display='block'; });
+    menuButton.addEventListener('click', (e) => { e.stopPropagation(); isMenuOpen=!isMenuOpen; mainMenu.classList.toggle('show',isMenuOpen); });
+    window.addEventListener('click', (e) => { if(isMenuOpen && !menuButton.contains(e.target) && !mainMenu.contains(e.target)) { mainMenu.classList.remove('show'); isMenuOpen=false; }});
+    editLayersMenuItem.addEventListener('click', () => { populateLayerEditModal(); mainMenu.classList.remove('show');isMenuOpen=false; });
+    saveLayersBtn.addEventListener('click', saveLayerEdits);
+    addLayerMenuItem.addEventListener('click', () => { addLayerModal.style.display='block'; mainMenu.classList.remove('show');isMenuOpen=false; });
+    saveNewLayerBtnModal.addEventListener('click', addNewLayer);
+    confirmRemoveLayerBtnInRLModal.addEventListener('click', removeSelectedLayer);
+    removeLayerMenuItem.addEventListener('click', () => { updateAddLayerSelect(); removeLayerModalElement.style.display='block'; mainMenu.classList.remove('show');isMenuOpen=false; });
+    saveHtmlMenuItem.addEventListener('click', () => { downloadHTML(); mainMenu.classList.remove('show');isMenuOpen=false; });
+    exportJsonMenuItem.addEventListener('click', () => { exportJourneyData(); mainMenu.classList.remove('show');isMenuOpen=false; });
+    importJsonMenuItem.addEventListener('click', () => { fileInput.value='';fileToImport=null;fileName.textContent='';fileInfo.style.display='none';confirmImportBtn.disabled=true;document.querySelector('input[name="importOption"][value="replace"]').checked=true;importModalElement.style.display='block';mainMenu.classList.remove('show');isMenuOpen=false; });
+    confirmImportBtn.addEventListener('click', importJourneyData);
+    contentGrid.addEventListener('click', function(e) { const edBtn=e.target.closest('.edit-btn'), delBtn=e.target.closest('.delete-btn'); if(edBtn){ const iId=edBtn.dataset.itemId,lId=edBtn.dataset.layerId;const item=journeyData[currentStageId]?.[lId]?.find(i=>i.id===iId);if(item){editTitleInput.value=item.title;editDescriptionInput.value=item.description;editLayerIdInput.value=lId;editItemIdInput.value=iId;editModalElement.style.display="block";}else showNotification('Item not found for editing.','error');}else if(delBtn){ const iId=delBtn.dataset.itemId,lId=delBtn.dataset.layerId;if(confirm('Are you sure you want to delete this item?')){if(journeyData[currentStageId]?.[lId]){const idx=journeyData[currentStageId][lId].findIndex(i=>i.id===iId);if(idx>-1){journeyData[currentStageId][lId].splice(idx,1);saveDataToLocalStorage();updateContent();showNotification('Item deleted successfully.','success');}else showNotification('Item not found for deletion.','error');}else showNotification('Stage or Layer data missing for deletion.','error');}}});
+
+    // --- INITIALIZATION ---
+    function initializeJourneyMap() {
+        console.log("INIT: Starting initializeJourneyMap...");
+        if (window.embeddedIAGData) {
+             console.log("INIT: Using embeddedIAGData for standalone HTML.");
+             journeyStages=window.embeddedIAGData.journeyStages || journeyStages;
+             dataLayers=window.embeddedIAGData.dataLayers || dataLayers;
+             journeyData=window.embeddedIAGData.journeyData || journeyData;
+             activeLayers=window.embeddedIAGData.activeLayers || activeLayers;
+             currentStageId=window.embeddedIAGData.currentStageId || currentStageId;
+             isInPresentationMode = typeof window.embeddedIAGData.isInPresentationMode === 'boolean' ? window.embeddedIAGData.isInPresentationMode : false;
+             window.saveDataToLocalStorage=()=>{console.log("Standalone HTML: Save disabled.")};
+             window.loadDataFromLocalStorage=()=>{console.log("Standalone HTML: Load disabled.")};
+        } else {
+            console.log("INIT: Loading data from localStorage...");
+            loadDataFromLocalStorage();
+        }
+        console.log("INIT: journeyStages after potential load:", JSON.parse(JSON.stringify(journeyStages)));
+        console.log("INIT: journeyData after potential load:", JSON.parse(JSON.stringify(journeyData)));
+        console.log("INIT: isInPresentationMode after potential load:", isInPresentationMode);
+
+
+        if(journeyStages.length > 0) { if (!currentStageId || !journeyStages.some(s => s.id === currentStageId)) {console.log("INIT: Resetting currentStageId to first stage."); currentStageId = journeyStages[0].id;} } else currentStageId = '';
+        journeyStages.forEach(s => s.active = (s.id === currentStageId));
+
+        activeLayers = activeLayers.filter(alId => dataLayers.some(dl => dl.id === alId));
+        if (activeLayers.length === 0 && dataLayers.length > 0) {console.log("INIT: Resetting activeLayers to first layer."); activeLayers = [dataLayers[0].id];}
+        dataLayers.forEach(dl => dl.active = activeLayers.includes(dl.id));
+
+        console.log("INIT: Running final data consistency check...");
+        const preConsistencyJourneyData = JSON.parse(JSON.stringify(journeyData));
+        journeyStages.forEach(stage => {
+            if (!journeyData[stage.id]) { console.log(`INIT (Consistency Final): Initializing journeyData for stage: ${stage.id}`); journeyData[stage.id] = {}; }
+            dataLayers.forEach(layer => { if (journeyData[stage.id] && typeof journeyData[stage.id][layer.id] === 'undefined') { console.log(`INIT (Consistency Final): Initializing layer ${layer.id} for stage ${stage.id}`); journeyData[stage.id][layer.id] = []; } });
+        });
+        Object.keys(journeyData).forEach(sId => {
+            if (!journeyStages.some(s => s.id === sId)) { console.log(`INIT (Consistency Final): Deleting data for undefined stage: ${sId}`); delete journeyData[sId]; }
+            else { if (journeyData[sId]) { Object.keys(journeyData[sId]).forEach(lId => { if (!dataLayers.some(l => l.id === lId)) { console.log(`INIT (Consistency Final): Deleting data for undefined layer ${lId} in stage ${sId}`); delete journeyData[sId][lId]; } }); } }
+        });
+        if(JSON.stringify(preConsistencyJourneyData) !== JSON.stringify(journeyData)){
+            console.warn("INIT (Consistency Final): journeyData was modified.");
+            console.log("INIT: journeyData *after* final consistency check:", JSON.parse(JSON.stringify(journeyData)));
+            saveDataToLocalStorage(); // Save if consistency check changed something
+        }
+
+        applyPresentationMode();
+        renderStages(); renderLayerToggles(); updateContent();
+        console.log("Customer Journey Map script initialized successfully.");
+    }
+    document.addEventListener('DOMContentLoaded', initializeJourneyMap);
+</script>
+</body>
+</html>
